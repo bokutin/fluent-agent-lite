@@ -186,7 +186,7 @@ sub open_tail {
     my $pid = open(my $tailfd, '-|', build_tail_command())
         or die "failed to exec tail";
     my $io = IO::Handle->new();
-    $io->fdopen($tailfd, "r");
+    $io->fdopen(fileno($tailfd), "r");
     $io->blocking(0); # set nonblock
     return ($io, $pid);
 }
@@ -213,7 +213,6 @@ sub main {
     if ( $input_file eq "-" ) {
         ($tailfd, $tailpid) = open_stdin();
     } elsif ( -f $input_file ) {
-        close(STDIN) or die "failed to close STDIN";
         ($tailfd, $tailpid) = open_tail();
     } else {
         die 'cannot find input file ', $input_file;
